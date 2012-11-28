@@ -1,0 +1,73 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: medium;
+	padding: 0;
+	margin: 0;
+}
+
+* html .clearfix {
+	height: 1%;
+	overflow: visible;
+}
+
+*+html .clearfix {
+	min-height: 1%;
+}
+
+.clearfix:after {
+	clear: both;
+	content: ".";
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
+
+#bodyContainer {
+	padding: 1.0em;
+}
+
+#contentContainer {
+	padding: 1.0em;
+}
+
+.pageHeader {
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+#errorsHeader {
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+#errorsContainer {
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+.errorContainer {
+	padding-left: 1em;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+.linkItem {
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+.formError {
+	color: #ff0000;
+}
+
+.invisible {
+	display: none;
+}
+
+.userContainer {
+	margin: 0.5em;
+}
+
+.userActionLinksContainer a {
+	margin-left: 0.3em;
+}
