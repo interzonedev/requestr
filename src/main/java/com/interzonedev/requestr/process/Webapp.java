@@ -11,7 +11,7 @@ import com.interzonedev.herokusupport.webserver.WebServerType;
 
 public class Webapp {
 
-	private static Logger log = (Logger) LoggerFactory.getLogger(Webapp.class);
+	private static final Logger log = (Logger) LoggerFactory.getLogger(Webapp.class);
 
 	public static void main(String[] args) throws Exception {
 

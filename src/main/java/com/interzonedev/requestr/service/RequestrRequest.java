@@ -12,13 +12,13 @@ public class RequestrRequest {
 	private final String url;
 
 	@NotEmpty
-	private final String method;
+	private final RequestrMethod method;
 
 	private final Map<String, List<String>> headers;
 
 	private final Map<String, List<String>> parameters;
 
-	public RequestrRequest(String url, String method, Map<String, List<String>> headers,
+	public RequestrRequest(String url, RequestrMethod method, Map<String, List<String>> headers,
 			Map<String, List<String>> parameters) {
 		this.url = url;
 		this.method = method;
@@ -30,7 +30,7 @@ public class RequestrRequest {
 		return url;
 	}
 
-	public String getMethod() {
+	public RequestrMethod getMethod() {
 		return method;
 	}
 

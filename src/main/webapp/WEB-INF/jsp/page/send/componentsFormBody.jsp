@@ -18,7 +18,7 @@
 
 		<div>
 			<label for="method">Method</label>
-			<form:input path="method" id="method" cssClass="inputField" />
+			<form:select id="method" path="method" items="${requestMethods}" cssClass="inputField" />
 			<form:errors path="method" cssClass="formError" />
 		</div>
 

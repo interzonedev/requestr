@@ -2,6 +2,7 @@ package com.interzonedev.requestr.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class RequestrResponse {
@@ -10,19 +11,22 @@ public class RequestrResponse {
 
 	private final String contentType;
 
-	private final int contentLength;
+	private final long contentLength;
 
 	private final Map<String, List<String>> headers;
 
 	private final String content;
 
-	public RequestrResponse(int status, String contentType, int contentLength, Map<String, List<String>> headers,
-			String content) {
+	private final Locale locale;
+
+	public RequestrResponse(int status, String contentType, long contentLength, Map<String, List<String>> headers,
+			String content, Locale locale) {
 		this.status = status;
 		this.contentType = contentType;
 		this.contentLength = contentLength;
 		this.headers = Collections.unmodifiableMap(headers);
 		this.content = content;
+		this.locale = locale;
 	}
 
 	public int getStatus() {
@@ -33,7 +37,7 @@ public class RequestrResponse {
 		return contentType;
 	}
 
-	public int getContentLength() {
+	public long getContentLength() {
 		return contentLength;
 	}
 
@@ -43,6 +47,10 @@ public class RequestrResponse {
 
 	public String getContent() {
 		return content;
+	}
+
+	public Locale getLocale() {
+		return locale;
 	}
 
 }

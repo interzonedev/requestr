@@ -11,7 +11,7 @@ import ch.qos.logback.classic.Logger;
 
 public abstract class RequestrController {
 
-	protected Logger log = (Logger) LoggerFactory.getLogger(getClass());
+	protected final Logger log = (Logger) LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Handles any {@code java.lang.Throwable} that may be thrown during any form processing.
