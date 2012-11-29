@@ -15,6 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -45,12 +46,34 @@ public class RequestrServiceImpl implements RequestrService {
 	@Override
 	public RequestrResponse doRequest(RequestrRequest requestrRequest) throws ClientProtocolException, IOException {
 
+		log.debug("doRequest: Starting request - " + requestrRequest);
+
+		// Assemble the HTTP request from the request value object.
+		HttpRequestBase httpRequestBase = getHttpRequestBaseFromRequestrRequest(requestrRequest);
+
+		log.debug("doRequest: Sending HTTP request");
+
+		// Send the HTTP request.
+		HttpResponse httpResponse = httpClient.execute(httpRequestBase);
+
+		// Assemble the response value object from the HTTP response.
+		RequestrResponse requestrResponse = getRequestrResponseFromHttpResponse(requestrRequest, httpResponse);
+
+		log.debug("doRequest: Received response - " + requestrResponse);
+
+		return requestrResponse;
+
+	}
+
+	private HttpRequestBase getHttpRequestBaseFromRequestrRequest(RequestrRequest requestrRequest) {
+
+		HttpRequestBase httpRequestBase = null;
+
 		String url = requestrRequest.getUrl();
 		RequestrMethod method = requestrRequest.getMethod();
 		Map<String, List<String>> requestHeaders = requestrRequest.getHeaders();
 		Map<String, List<String>> requestParameters = requestrRequest.getParameters();
 
-		HttpRequestBase httpRequestBase = null;
 		switch (method) {
 			case GET:
 				httpRequestBase = new HttpGet(url);
@@ -118,7 +141,12 @@ public class RequestrServiceImpl implements RequestrService {
 			}
 		}
 
-		HttpResponse httpResponse = httpClient.execute(httpRequestBase);
+		return httpRequestBase;
+
+	}
+
+	private RequestrResponse getRequestrResponseFromHttpResponse(RequestrRequest requestrRequest,
+			HttpResponse httpResponse) throws ParseException, IOException {
 
 		HttpEntity responseEntity = httpResponse.getEntity();
 
@@ -150,7 +178,9 @@ public class RequestrServiceImpl implements RequestrService {
 
 		Locale locale = httpResponse.getLocale();
 
-		return new RequestrResponse(statusCode, contentType, contentLength, responseHeaders, responseContent, locale);
+		return new RequestrResponse(requestrRequest, statusCode, contentType, contentLength, responseHeaders,
+				responseContent, locale);
+
 	}
 
 }

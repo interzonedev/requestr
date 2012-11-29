@@ -42,4 +42,13 @@ public class RequestrRequest {
 		return parameters;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(getMethod()).append(" ").append(getUrl());
+
+		return sb.toString();
+	}
+
 }

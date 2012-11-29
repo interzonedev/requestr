@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class RequestrResponse {
 
+	private final RequestrRequest request;
+
 	private final int status;
 
 	private final String contentType;
@@ -19,14 +21,19 @@ public class RequestrResponse {
 
 	private final Locale locale;
 
-	public RequestrResponse(int status, String contentType, long contentLength, Map<String, List<String>> headers,
-			String content, Locale locale) {
+	public RequestrResponse(RequestrRequest request, int status, String contentType, long contentLength,
+			Map<String, List<String>> headers, String content, Locale locale) {
+		this.request = request;
 		this.status = status;
 		this.contentType = contentType;
 		this.contentLength = contentLength;
 		this.headers = Collections.unmodifiableMap(headers);
 		this.content = content;
 		this.locale = locale;
+	}
+
+	public RequestrRequest getRequest() {
+		return request;
 	}
 
 	public int getStatus() {
@@ -53,4 +60,12 @@ public class RequestrResponse {
 		return locale;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(getStatus()).append(" from ").append(getRequest());
+
+		return sb.toString();
+	}
 }
