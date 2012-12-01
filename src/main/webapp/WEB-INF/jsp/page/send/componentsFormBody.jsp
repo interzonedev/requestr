@@ -3,27 +3,35 @@
 
 <c:url var="formAction" value="/send/components" scope="page" />
 
-<div class="section">
-	<form:form modelAttribute="componentsForm" action="${formAction}" method="post">
 
-		<div class="globalErrorsContainer">
-			<form:errors cssClass="formError" />
+<form:form modelAttribute="componentsForm" action="${formAction}" method="post" class="form-horizontal">
+
+	<form:errors>
+		<div class="control-group error">
+			<form:errors cssClass="help-inline" />
 		</div>
+	</form:errors>
 
-		<div>
-			<label for="url">URL</label>
-			<form:input path="url" id="url" cssClass="inputField" />
-			<form:errors path="url" cssClass="formError" />
+	<div class="control-group <form:errors path="url">error</form:errors>">
+		<label for="url" class="control-label">URL</label>
+		<div class="controls">
+			<form:input path="url" id="url" />
+			<form:errors path="url" cssClass="help-inline" />
 		</div>
+	</div>
 
-		<div>
-			<label for="method">Method</label>
-			<form:select id="method" path="method" items="${requestMethods}" cssClass="inputField" />
-			<form:errors path="method" cssClass="formError" />
+	<div class="control-group <form:errors path="method">error</form:errors>">
+		<label for="method" class="control-label">Method</label>
+		<div class="controls">
+			<form:select id="method" path="method" items="${requestMethods}" />
+			<form:errors path="method" cssClass="help-inline" />
 		</div>
+	</div>
 
-		<div class="buttons">
+	<div class="control-group">
+		<div class="controls">
 			<input type="submit" value="Submit" class="btn" />
 		</div>
-	</form:form>
-</div>
+	</div>
+
+</form:form>
