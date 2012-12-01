@@ -3,9 +3,7 @@
 
 <c:url var="formAction" value="/send/components" scope="page" />
 
-
 <form:form modelAttribute="componentsForm" action="${formAction}" method="post" class="form-horizontal">
-<%--<form:form modelAttribute="componentsForm" action="${formAction}" method="post">--%>
 
 	<form:errors>
 		<div class="control-group error">

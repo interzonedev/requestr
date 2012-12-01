@@ -28,8 +28,8 @@ import com.interzonedev.requestr.web.RequestrController;
 @RequestMapping(value = "/send")
 public class SendController extends RequestrController {
 
-	private static final String JSON_FORM_VIEW = "send/jsonForm";
-	private static final String COMPONENTS_FORM_VIEW = "send/componentsForm";
+	private static final String JSON_FORM_VIEW = "send/json/jsonForm";
+	private static final String COMPONENTS_FORM_VIEW = "send/components/componentsForm";
 	private static final String RESPONSE_VIEW = "send/response";
 
 	@Inject
