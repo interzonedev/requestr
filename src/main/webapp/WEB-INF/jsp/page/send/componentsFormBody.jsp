@@ -23,8 +23,7 @@
 		</div>
 
 		<div class="buttons">
-			<input type="submit" value="Submit" />
+			<input type="submit" value="Submit" class="btn" />
 		</div>
 	</form:form>
-
 </div>

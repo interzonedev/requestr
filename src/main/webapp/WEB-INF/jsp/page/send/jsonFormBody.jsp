@@ -6,19 +6,18 @@
 <div class="section">
 	<form:form modelAttribute="jsonForm" action="${formAction}" method="post">
 
-		<div class="globalErrorsContainer">
-			<form:errors cssClass="formError" />
-		</div>
+		<form:errors>
+			<div class="control-group error">
+				<form:errors cssClass="help-inline" />
+			</div>
+		</form:errors>
 
-		<div>
+		<div <form:errors path="input">class="control-group error"</form:errors>>
 			<label for="input">JSON Input</label>
-			<form:textarea path="input" id="input" cssClass="inputField" cols="100" rows="20" />
-			<form:errors path="input" cssClass="formError" />
+			<form:textarea path="input" id="input" cols="50" rows="10" />
+			<form:errors path="input"><p><form:errors path="input" cssClass="help-inline" /></p></form:errors>
 		</div>
 
-		<div class="buttons">
-			<input type="submit" value="Submit" />
-		</div>
+		<input type="submit" value="Submit" class="btn" />
 	</form:form>
-
 </div>

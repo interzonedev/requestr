@@ -1,10 +1,7 @@
 package com.interzonedev.requestr.web.send;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -12,7 +9,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,9 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.fasterxml.jackson.core.JsonParser.Feature;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interzonedev.requestr.service.InvalidJsonException;
 import com.interzonedev.requestr.service.RequestrMethod;
 import com.interzonedev.requestr.service.RequestrRequest;
@@ -34,6 +27,10 @@ import com.interzonedev.requestr.web.RequestrController;
 @Controller
 @RequestMapping(value = "/send")
 public class SendController extends RequestrController {
+
+	private static final String JSON_FORM_VIEW = "send/jsonForm";
+	private static final String COMPONENTS_FORM_VIEW = "send/componentsForm";
+	private static final String RESPONSE_VIEW = "send/response";
 
 	@Inject
 	@Named("requestrService")
@@ -69,7 +66,7 @@ public class SendController extends RequestrController {
 
 		log.debug("displayJsonForm: End");
 
-		return "send/jsonForm";
+		return JSON_FORM_VIEW;
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "json")
@@ -78,18 +75,16 @@ public class SendController extends RequestrController {
 
 		if (result.hasErrors()) {
 			log.debug("sendJsonRequest: Form has errors");
-			return "send/jsonForm";
+			return JSON_FORM_VIEW;
 		}
-
-		String input = jsonForm.getInput().trim();
 
 		RequestrRequest requestrRequest = null;
 		try {
-			requestrRequest = jsonToRequest(input);
+			requestrRequest = jsonForm.toRequest();
 		} catch (InvalidJsonException ije) {
 			log.debug("sendJsonRequest: JSON has errors - " + ije.getMessage());
 			result.rejectValue("input", "InvalidJson.jsonForm.input", new Object[] { ije.getMessage() }, null);
-			return "send/jsonForm";
+			return JSON_FORM_VIEW;
 		}
 
 		RequestrResponse requestrResponse = null;
@@ -100,14 +95,14 @@ public class SendController extends RequestrController {
 			String errorMessage = t.getMessage();
 			String stackTrace = ExceptionUtils.getStackTrace(t);
 			result.reject("error.request", new Object[] { errorMessage, stackTrace }, null);
-
+			return JSON_FORM_VIEW;
 		}
 
 		model.addAttribute("response", requestrResponse);
 
 		log.debug("sendJsonRequest: End");
 
-		return "send/response";
+		return RESPONSE_VIEW;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "components")
@@ -118,7 +113,7 @@ public class SendController extends RequestrController {
 
 		log.debug("displayComponentsForm: End");
 
-		return "send/componentsForm";
+		return COMPONENTS_FORM_VIEW;
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "components")
@@ -127,7 +122,7 @@ public class SendController extends RequestrController {
 
 		if (result.hasErrors()) {
 			log.debug("sendComponentsRequest: Form has errors");
-			return "send/componentsForm";
+			return COMPONENTS_FORM_VIEW;
 		}
 
 		@SuppressWarnings("unused")
@@ -139,70 +134,7 @@ public class SendController extends RequestrController {
 
 		log.debug("sendComponentsRequest: End");
 
-		return "send/response";
-	}
-
-	private RequestrRequest jsonToRequest(String json) throws InvalidJsonException {
-
-		Map<String, Object> requestValues = null;
-		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.configure(Feature.ALLOW_COMMENTS, true);
-			requestValues = (objectMapper).readValue(json, new TypeReference<Map<String, Object>>() {
-			});
-		} catch (Throwable t) {
-			String errorMessage = "Invalid JSON format";
-			log.error("jsonToRequest: " + errorMessage, t);
-
-			if (StringUtils.isNotBlank(t.getMessage())) {
-				errorMessage += " - " + t.getMessage();
-			}
-
-			throw new InvalidJsonException(errorMessage, t);
-		}
-
-		String url = (String) requestValues.get("url");
-
-		if (StringUtils.isBlank(url)) {
-			throw new InvalidJsonException("The \"url\" key must be set");
-		}
-
-		String method = (String) requestValues.get("method");
-
-		if (StringUtils.isBlank(method)) {
-			throw new InvalidJsonException("The \"method\" key must be set");
-		}
-
-		RequestrMethod requestMethod = null;
-		try {
-			requestMethod = RequestrMethod.valueOf(method.toUpperCase());
-		} catch (IllegalArgumentException iae) {
-			throw new InvalidJsonException("The \"method\" value of \"" + method + "\" is invalid");
-		}
-
-		@SuppressWarnings("unchecked")
-		Map<String, String> headerValues = (Map<String, String>) requestValues.get("headers");
-
-		Map<String, List<String>> headers = new HashMap<String, List<String>>();
-		if ((null != headerValues) && !headerValues.isEmpty()) {
-			for (String headerName : headerValues.keySet()) {
-				String headerValue = headerValues.get(headerName);
-				headers.put(headerName, Arrays.asList(new String[] { headerValue }));
-			}
-		}
-
-		@SuppressWarnings("unchecked")
-		Map<String, String> parameterValues = (Map<String, String>) requestValues.get("parameters");
-
-		Map<String, List<String>> parameters = new HashMap<String, List<String>>();
-		if ((null != parameterValues) && !parameterValues.isEmpty()) {
-			for (String parameterName : parameterValues.keySet()) {
-				String parameterValue = parameterValues.get(parameterName);
-				parameters.put(parameterName, Arrays.asList(new String[] { parameterValue }));
-			}
-		}
-
-		return new RequestrRequest(url, requestMethod, headers, parameters);
+		return RESPONSE_VIEW;
 	}
 
 }
