@@ -1,17 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE html
-	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <%@ page session="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
 		<title>Requestr Application - ${param.title}</title>
 
-		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<meta name="description"
+			content="Make any kind of HTTP request with control over headers and parameters in JSON format or with individual components." />
+		<meta name="viewport" content="width=device-width" />
 
 		<link rel="icon" href="<c:url value="/assets/img/favicon.png" />" type="image/png" />
 
