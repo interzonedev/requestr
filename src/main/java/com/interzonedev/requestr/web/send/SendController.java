@@ -125,12 +125,20 @@ public class SendController extends RequestrController {
 			return COMPONENTS_FORM_VIEW;
 		}
 
-		@SuppressWarnings("unused")
-		String url = componentsForm.getUrl().trim();
-		@SuppressWarnings("unused")
-		String method = componentsForm.getMethod().trim();
+		RequestrRequest requestrRequest = componentsForm.toRequest();
 
-		model.addAttribute("response", "Foo");
+		RequestrResponse requestrResponse = null;
+		try {
+			requestrResponse = requestrService.doRequest(requestrRequest);
+		} catch (Throwable t) {
+			log.error("sendComponentsRequest: Error making HTTP request", t);
+			String errorMessage = t.getMessage();
+			String stackTrace = ExceptionUtils.getStackTrace(t);
+			result.reject("error.request", new Object[] { errorMessage, stackTrace }, null);
+			return COMPONENTS_FORM_VIEW;
+		}
+
+		model.addAttribute("response", requestrResponse);
 
 		log.debug("sendComponentsRequest: End");
 
