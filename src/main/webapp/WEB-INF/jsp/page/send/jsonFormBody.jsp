@@ -12,7 +12,7 @@
 
 		<div>
 			<label for="input">JSON Input</label>
-			<form:textarea path="input" id="input" cssClass="inputField" cols="40" rows="20" />
+			<form:textarea path="input" id="input" cssClass="inputField" cols="100" rows="20" />
 			<form:errors path="input" cssClass="formError" />
 		</div>
 

@@ -15,7 +15,8 @@
 
 		<meta name="description"
 			content="Make any kind of HTTP request with control over headers and parameters in JSON format or with individual components." />
-		<meta name="viewport" content="width=device-width" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 		<link rel="icon" href="<c:url value="/assets/img/favicon.png" />" type="image/png" />
 
@@ -33,21 +34,12 @@
 	</head>
 
 	<body>
-		<div id="bodyContainer">
-			<div id="topContainer">
-				<jsp:include page="../frag/top.jsp" />
-			</div>
+		<jsp:include page="../frag/top.jsp" />
 
-			<div id="contentContainer">
-				<div class="pageHeader">
-					Requestr Application - ${param.pageHeader}
-				</div>
-				<jsp:include page="${param.bodyContent}" />
-			</div>
+		<div class="container">
+			<jsp:include page="${param.bodyContent}" />
 
-			<div id="bottomContainer">
-				<jsp:include page="../frag/bottom.jsp" />
-			</div>
+			<jsp:include page="../frag/bottom.jsp" />
 		</div>
 
 		<jsp:include page="../frag/commonBodyJsIncludes.jsp" />
