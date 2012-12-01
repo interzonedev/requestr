@@ -3,3 +3,14 @@
 Author styles go here.
 
 */
+
+label.inline {
+	display: inline;
+}
+
+label.wider {
+	width: 50px;
+	text-align: right;
+	float: left;
+	padding-right: 5px;
+}
