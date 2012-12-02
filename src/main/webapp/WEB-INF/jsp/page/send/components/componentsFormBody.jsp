@@ -26,7 +26,7 @@
 	<div class="control-group">
 		<fieldset>
 			<legend>Parameters</legend>
-			<div>
+			<div id="parametersContainer">
 				<label for="parameterName1" class="inline">Name</label>
 				<input type="text" id="parameterName1">
 				<span class="help-inline"></span>
@@ -42,7 +42,7 @@
 	<div class="control-group">
 		<fieldset>
 			<legend>Headers</legend>
-			<div>
+			<div id="headersContainer">
 				<label for="headerName1" class="inline">Name</label>
 				<input type="text" id="headerName1">
 				<span class="help-inline"></span>
@@ -57,4 +57,15 @@
 		<input type="submit" value="Submit" class="btn" />
 	</div>
 
+	<div id="nameValuePairTemplate" class="htmlTemplate">
+		<div id="{{newNameValueContainerId}}">
+			<label for="{{nameId}}" class="inline">Name</label>
+			<input type="text" id="{{nameId}}">
+			<span class="help-inline"></span>
+			<label for="{{valueId}}" class="inline">Value</label>
+			<input type="text" id="{{valueId}}">
+			<span class="help-inline"></span>
+			<i class="icon-minus-sign"></i>
+		</div>
+	</div>
 </form:form>

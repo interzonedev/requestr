@@ -14,3 +14,7 @@ label.wider {
 	float: left;
 	padding-right: 5px;
 }
+
+.htmlTemplate {
+	display: none;
+}
