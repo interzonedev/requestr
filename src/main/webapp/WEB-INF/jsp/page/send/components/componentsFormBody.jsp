@@ -15,7 +15,7 @@
 
 	<div class="control-group <form:errors path="url">error</form:errors>">
 		<label for="url" class="inline wider">URL</label>
-		<form:input path="url" id="url" />
+		<form:input path="url" id="url" placeholder="URL" />
 		<form:errors path="url" cssClass="help-inline" />
 	</div>
 
@@ -25,7 +25,7 @@
 		<form:errors path="method" cssClass="help-inline" />
 	</div>
 
-	<div class="control-group">
+	<div>
 		<fieldset>
 			<legend>Parameters</legend>
 			<div id="parametersContainer"></div>
@@ -33,7 +33,7 @@
 		</fieldset>
 	</div>
 
-	<div class="control-group">
+	<div>
 		<fieldset>
 			<legend>Headers</legend>
 			<div id="headersContainer"></div>
@@ -46,13 +46,17 @@
 	</div>
 
 	<div id="nameValuePairTemplate" class="htmlTemplate">
-		<div id="nameValueContainer{{count}}" class="nameValuePairContainer">
-			<label for="name{{count}}" class="inline">Name</label>
-			<input type="text" id="name{{count}}">
-			<span class="help-inline"></span>
-			<label for="value{{count}}" class="inline">Value</label>
-			<input type="text" id="value{{count}}">
-			<span class="help-inline"></span>
+		<div id="nameValueContainer{{count}}" class="nameValuePairContainer form-inline control-group">
+			<span>
+				<label for="name{{count}}" class="inline">Name</label>
+				<input type="text" id="name{{count}}" class="control-input" placeholder="Name">
+				<span class="formError control-formError"><span class="help-inline">Invalid Name</span></span>
+			</span>
+			<span>
+				<label for="value{{count}}" class="inline">Value</label>
+				<input type="text" id="value{{count}}" class="control-input" placeholder="Value">
+				<span class="formError control-formError"><span class="help-inline">Invalid Value</span></span>
+			</span>
 			<i class="icon-minus-sign link control-deleteNameValuePair"></i>
 		</div>
 	</div>

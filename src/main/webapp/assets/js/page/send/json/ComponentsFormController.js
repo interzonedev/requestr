@@ -14,7 +14,7 @@
 		$addHeaderTrigger: null,
 		numNameValuePairs: 0,
 		nameValuePairTemplateHtml: null,
-		
+
 		constructor: function(params) {
 			this.base(params);
 		},
@@ -39,6 +39,7 @@
 
 			oj.$.bindAsEventListener(this.$addParameterTrigger, "click", this, this.addParameter);
 			oj.$.bindAsEventListener(this.$addHeaderTrigger, "click", this, this.addHeader);
+			oj.$.bindAsEventListener(this.$componentsForm, "submit", this, this.handleFormSubmit);
 		},
 
 		initializeNameValuePairs: function() {
@@ -82,9 +83,67 @@
 			$target = $(evt.target);
 			$nameValueContainer = $target.parent();
 			$nameValueContainer.remove();
+		},
+
+		handleFormSubmit: function(evt) {
+			if (!this.validateForm()) {
+				evt.preventDefault();	
+			} else {
+				// Update hidden form fields.
+			}		
+		},
+
+		validateForm: function() {
+			var _this, valid, $inputs;
+
+			_this = this;
+
+			valid = true;
+
+			this.clearFormErrors();
+
+			$inputs = this.getActiveInputs();
+
+			$inputs.each(function(i, input) {
+				var $input, $inputGroup, $errorContainer, $nameValueContainer;
+
+				$input = $(input);
+				if (!_this.clazz.VALID_INPUT_REGEXP.test($input.val())) {
+					valid = false;
+					$inputGroup = $input.parent();
+					$errorContainer = $(".control-formError", $inputGroup);
+					$nameValueContainer = $inputGroup.parent();
+					$nameValueContainer.addClass("error");
+					$errorContainer.show();
+				}
+			});
+
+			return valid;
+		},
+
+		clearFormErrors: function() {
+			var $inputs;
+
+			$inputs = this.getActiveInputs();
+
+			$inputs.each(function(i, input) {
+				var $input, $inputGroup, $errorContainer, $nameValueContainer;
+
+				$input = $(input);
+				$inputGroup = $input.parent();
+				$errorContainer = $(".control-formError", $inputGroup);
+				$nameValueContainer = $inputGroup.parent();
+				$nameValueContainer.removeClass("error");
+				$errorContainer.hide();
+			});
+		},
+
+		getActiveInputs: function() {
+			return $(".control-input").not(".htmlTemplate .control-input");
 		}
 	}, {
-		className: "page.send.json.ComponentsFormController"
+		className: "page.send.json.ComponentsFormController",
+		VALID_INPUT_REGEXP: /\S/
 	});
 
 }(jQuery));

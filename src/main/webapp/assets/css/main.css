@@ -4,7 +4,7 @@ Author styles go here.
 
 */
 
-label.inline {
+.inline {
 	display: inline;
 }
 
@@ -17,6 +17,10 @@ label.wider {
 
 .link {
 	cursor: pointer;
+}
+
+.formError {
+	display: none;
 }
 
 .htmlTemplate {
