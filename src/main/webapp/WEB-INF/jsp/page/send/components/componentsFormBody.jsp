@@ -3,7 +3,9 @@
 
 <c:url var="formAction" value="/send/components" scope="page" />
 
-<form:form modelAttribute="componentsForm" action="${formAction}" method="post" class="form-horizontal">
+<form:form id="componentsForm" modelAttribute="componentsForm" action="${formAction}" method="post" class="form-horizontal">
+	<form:hidden path="parameterValues" id="parameterValues" />
+	<form:hidden path="headerValues" id="headerValues" />
 
 	<form:errors>
 		<div class="control-group error">
@@ -26,30 +28,16 @@
 	<div class="control-group">
 		<fieldset>
 			<legend>Parameters</legend>
-			<div id="parametersContainer">
-				<label for="parameterName1" class="inline">Name</label>
-				<input type="text" id="parameterName1">
-				<span class="help-inline"></span>
-				<label for="parameterValue1" class="inline">Value</label>
-				<input type="text" id="parameterValue1">
-				<span class="help-inline"></span>
-				<i class="icon-minus-sign"></i>
-			</div>
-			<div><i class="icon-plus-sign"></i> Add another parameter</div>
+			<div id="parametersContainer"></div>
+			<div id="addParameterTrigger" class="link"><i class="icon-plus-sign"></i> Add another parameter</div>
 		</fieldset>
 	</div>
 
 	<div class="control-group">
 		<fieldset>
 			<legend>Headers</legend>
-			<div id="headersContainer">
-				<label for="headerName1" class="inline">Name</label>
-				<input type="text" id="headerName1">
-				<span class="help-inline"></span>
-				<label for="headerValue1" class="inline">Value</label>
-				<input type="text" id="headerValue1">
-				<span class="help-inline"></span>
-			</div>
+			<div id="headersContainer"></div>
+			<div id="addHeaderTrigger" class="link"><i class="icon-plus-sign"></i> Add another header</div>
 		</fieldset>
 	</div>
 
@@ -58,14 +46,14 @@
 	</div>
 
 	<div id="nameValuePairTemplate" class="htmlTemplate">
-		<div id="{{newNameValueContainerId}}">
-			<label for="{{nameId}}" class="inline">Name</label>
-			<input type="text" id="{{nameId}}">
+		<div id="nameValueContainer{{count}}" class="nameValuePairContainer">
+			<label for="name{{count}}" class="inline">Name</label>
+			<input type="text" id="name{{count}}">
 			<span class="help-inline"></span>
-			<label for="{{valueId}}" class="inline">Value</label>
-			<input type="text" id="{{valueId}}">
+			<label for="value{{count}}" class="inline">Value</label>
+			<input type="text" id="value{{count}}">
 			<span class="help-inline"></span>
-			<i class="icon-minus-sign"></i>
+			<i class="icon-minus-sign link control-deleteNameValuePair"></i>
 		</div>
 	</div>
 </form:form>

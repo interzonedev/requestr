@@ -15,6 +15,14 @@ label.wider {
 	padding-right: 5px;
 }
 
+.link {
+	cursor: pointer;
+}
+
 .htmlTemplate {
 	display: none;
+}
+
+.nameValuePairContainer {
+	margin-bottom: 5px;
 }

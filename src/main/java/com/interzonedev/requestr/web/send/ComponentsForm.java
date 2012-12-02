@@ -16,9 +16,9 @@ public class ComponentsForm {
 	@NotEmpty
 	private String method;
 
-	private String headerValues;
-
 	private String parameterValues;
+
+	private String headerValues;
 
 	public String getUrl() {
 		return url;
@@ -36,20 +36,20 @@ public class ComponentsForm {
 		this.method = method;
 	}
 
-	public String getHeaderValues() {
-		return headerValues;
-	}
-
-	public void setHeaderValues(String headerValues) {
-		this.headerValues = headerValues;
-	}
-
 	public String getParameterValues() {
 		return parameterValues;
 	}
 
 	public void setParameterValues(String parameterValues) {
 		this.parameterValues = parameterValues;
+	}
+
+	public String getHeaderValues() {
+		return headerValues;
+	}
+
+	public void setHeaderValues(String headerValues) {
+		this.headerValues = headerValues;
 	}
 
 	public RequestrRequest toRequest() {
