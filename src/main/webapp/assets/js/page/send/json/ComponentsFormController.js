@@ -35,24 +35,49 @@
 			$nameValuePairTemplate = $("#nameValuePairTemplate");
 			this.nameValuePairTemplateHtml = $nameValuePairTemplate.html(); 
 
-			this.initializeNameValuePairs();
+			this.initializeNameValuePairs(this.$parameterValuesInput, this.$parametersContainer);
+			this.initializeNameValuePairs(this.$headerValuesInput, this.$headersContainer);
 
 			oj.$.bindAsEventListener(this.$addParameterTrigger, "click", this, this.addParameter);
 			oj.$.bindAsEventListener(this.$addHeaderTrigger, "click", this, this.addHeader);
 			oj.$.bindAsEventListener(this.$componentsForm, "submit", this, this.handleFormSubmit);
 		},
 
-		initializeNameValuePairs: function() {
-			this.addNameValuePair(this.$parametersContainer);
-			this.addNameValuePair(this.$headersContainer);			
+		initializeNameValuePairs: function($valuesInput, $parameterNameValuePairsContainer) {
+			var _this, values, nameValuePairs;
+
+			_this = this;
+
+			values = $valuesInput.val();
+			if (values) {
+				nameValuePairs = values.split("&"); 
+
+				$.each(nameValuePairs, function(i, nameValuePair) {
+					var nameValueParts, name, value;
+
+					nameValueParts = nameValuePair.split("=");
+					name = nameValueParts[0];
+					value = nameValueParts[1];
+
+					_this.addNameValuePair($parameterNameValuePairsContainer, name, value); 
+				});
+			}
 		},
 
-		addNameValuePair: function($nameValuePairsContainer) {
+		addNameValuePair: function($nameValuePairsContainer, name, value) {
 			var context, nameValuePairHtml;
 
 			context = {
 				count: this.numNameValuePairs
 			};
+
+			if (name) {
+				context.name = name;
+			}
+
+			if (value) {
+				context.value = value;
+			}
 
 			nameValuePairHtml = Mustache.to_html(this.nameValuePairTemplateHtml, context);
 			
@@ -86,10 +111,11 @@
 		},
 
 		handleFormSubmit: function(evt) {
-			if (!this.validateForm()) {
-				evt.preventDefault();	
+			if (this.validateForm()) {
+				this.updateValuesFormField(this.$parametersContainer, this.$parameterValuesInput);
+				this.updateValuesFormField(this.$headersContainer, this.$headerValuesInput);
 			} else {
-				// Update hidden form fields.
+				evt.preventDefault();
 			}		
 		},
 
@@ -138,11 +164,33 @@
 			});
 		},
 
+		updateValuesFormField: function($parameterNameValuePairsContainer, $valuesInput) {
+			var $nameValuePairs, values, value;
+
+			$nameValuePairs = $(".control-nameValuePairContainer", $parameterNameValuePairsContainer);
+
+			values = [];
+
+			$nameValuePairs.each(function(i, nameValuePair) {
+				var $nameValuePair, $nameInput, $valueInput;
+
+				$nameValuePair = $(nameValuePair);
+				$nameInput = $(".control-nameInput", $nameValuePair);
+				$valueInput = $(".control-valueInput", $nameValuePair);
+				values.push($nameInput.val() + "=" + $valueInput.val());
+			});
+			
+			value = values.join("&");
+
+			$valuesInput.val(value);
+		},
+
 		getActiveInputs: function() {
-			return $(".control-input").not(".htmlTemplate .control-input");
+			return $(".control-nameInput, .control-valueInput").not(".htmlTemplate .control-nameInput, .htmlTemplate .control-valueInput");
 		}
 	}, {
 		className: "page.send.json.ComponentsFormController",
+
 		VALID_INPUT_REGEXP: /\S/
 	});
 

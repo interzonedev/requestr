@@ -19,6 +19,10 @@ label.wider {
 	cursor: pointer;
 }
 
+.spacer {
+	margin-top: 20px;
+}
+
 .formError {
 	display: none;
 }
