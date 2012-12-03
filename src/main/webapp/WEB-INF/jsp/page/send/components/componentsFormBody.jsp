@@ -25,7 +25,7 @@
 		<form:errors path="method" cssClass="help-inline" />
 	</div>
 
-	<div>
+	<div class="control-group">
 		<fieldset>
 			<legend>Parameters</legend>
 			<div id="parametersContainer"></div>
@@ -33,7 +33,7 @@
 		</fieldset>
 	</div>
 
-	<div>
+	<div class="control-group">
 		<fieldset>
 			<legend>Headers</legend>
 			<div id="headersContainer"></div>

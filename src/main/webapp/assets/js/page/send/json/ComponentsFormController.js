@@ -186,7 +186,8 @@
 		},
 
 		getActiveInputs: function() {
-			return $(".control-nameInput, .control-valueInput").not(".htmlTemplate .control-nameInput, .htmlTemplate .control-valueInput");
+			//return $(".control-nameInput, .control-valueInput").not(".htmlTemplate .control-nameInput, .htmlTemplate .control-valueInput");
+			return $(".control-nameInput").not(".htmlTemplate .control-nameInput");
 		}
 	}, {
 		className: "page.send.json.ComponentsFormController",

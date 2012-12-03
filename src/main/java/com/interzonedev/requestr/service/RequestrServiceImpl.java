@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,6 +28,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -74,6 +76,30 @@ public class RequestrServiceImpl implements RequestrService {
 		Map<String, List<String>> requestHeaders = requestrRequest.getHeaders();
 		Map<String, List<String>> requestParameters = requestrRequest.getParameters();
 
+		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		if ((null != requestParameters) && !requestParameters.isEmpty()) {
+			for (String parameterName : requestParameters.keySet()) {
+				List<String> parameterValues = requestParameters.get(parameterName);
+				for (String parameterValue : parameterValues) {
+					nameValuePairs.add(new BasicNameValuePair(parameterName, parameterValue));
+				}
+			}
+		}
+
+		switch (method) {
+			case POST:
+			case PUT:
+				break;
+			default:
+				String queryString = URLEncodedUtils.format(nameValuePairs, "utf-8");
+				if (!url.contains("?")) {
+					url += "?";
+				} else if (StringUtils.isNotBlank(queryString)) {
+					url += "&";
+				}
+				url += queryString;
+		}
+
 		switch (method) {
 			case GET:
 				httpRequestBase = new HttpGet(url);
@@ -109,34 +135,19 @@ public class RequestrServiceImpl implements RequestrService {
 			}
 		}
 
-		if ((null != requestParameters) && !requestParameters.isEmpty()) {
+		if (!nameValuePairs.isEmpty()) {
 			switch (method) {
 				case POST:
 				case PUT:
-					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-					for (String parameterName : requestParameters.keySet()) {
-						List<String> parameterValues = requestParameters.get(parameterName);
-						for (String parameterValue : parameterValues) {
-							nameValuePairs.add(new BasicNameValuePair(parameterName, parameterValue));
-						}
-					}
 					UrlEncodedFormEntity requestBodyEntity;
 					try {
-						requestBodyEntity = new UrlEncodedFormEntity(nameValuePairs, "UTF-8");
+						requestBodyEntity = new UrlEncodedFormEntity(nameValuePairs, "utf-8");
 					} catch (UnsupportedEncodingException uee) {
 						String errorMessage = "Error creating request body";
 						log.error("doRequest: " + errorMessage, uee);
 						throw new RuntimeException(errorMessage, uee);
 					}
 					((HttpEntityEnclosingRequestBase) httpRequestBase).setEntity(requestBodyEntity);
-					break;
-				default:
-					for (String parameterName : requestParameters.keySet()) {
-						List<String> parameterValues = requestParameters.get(parameterName);
-						for (String parameterValue : parameterValues) {
-							httpRequestBase.getParams().setParameter(parameterName, parameterValue);
-						}
-					}
 					break;
 			}
 		}
