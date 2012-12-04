@@ -1,13 +1,16 @@
 package com.interzonedev.requestr.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -29,10 +32,13 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import ch.qos.logback.classic.Logger;
 
@@ -44,6 +50,19 @@ public class RequestrServiceImpl implements RequestrService {
 	@Inject
 	@Named("httpClient")
 	protected DefaultHttpClient httpClient;
+
+	@Inject
+	@Named("keystoreFilePath")
+	private String keystoreFilePath;
+
+	@Inject
+	@Named("keystorePassword")
+	private String keystorePassword;
+
+	@PostConstruct
+	public void init() {
+		addSslScheme();
+	}
 
 	@Override
 	public RequestrResponse doRequest(RequestrRequest requestrRequest) throws ClientProtocolException, IOException {
@@ -194,4 +213,31 @@ public class RequestrServiceImpl implements RequestrService {
 
 	}
 
+	private void addSslScheme() {
+
+		try {
+			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+
+			ClassPathResource keystoreResource = new ClassPathResource(keystoreFilePath);
+			InputStream keystoreStream = keystoreResource.getInputStream();
+
+			try {
+				trustStore.load(keystoreStream, keystorePassword.toCharArray());
+			} finally {
+				try {
+					keystoreStream.close();
+				} catch (Exception ignore) {
+				}
+			}
+
+			SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
+			Scheme sch = new Scheme("https", 443, socketFactory);
+			httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+		} catch (Throwable t) {
+			String errorMessage = "Error adding SSL scheme to HTTP client";
+			log.error("addSslScheme: " + errorMessage, t);
+			throw new RuntimeException(errorMessage, t);
+		}
+
+	}
 }
