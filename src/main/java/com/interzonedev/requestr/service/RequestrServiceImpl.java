@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.Cookie;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
@@ -190,6 +191,8 @@ public class RequestrServiceImpl implements RequestrService {
 
 		long contentLength = responseEntity.getContentLength();
 
+		List<Cookie> cookies = new ArrayList<Cookie>();
+
 		Map<String, List<String>> responseHeaders = new HashMap<String, List<String>>();
 		Header[] responseHeaderValues = httpResponse.getAllHeaders();
 		for (Header responseHeaderValue : responseHeaderValues) {
@@ -208,11 +211,11 @@ public class RequestrServiceImpl implements RequestrService {
 
 		Locale locale = httpResponse.getLocale();
 
-		return new RequestrResponse(requestrRequest, statusCode, contentType, contentLength, responseHeaders,
+		return new RequestrResponse(requestrRequest, statusCode, contentType, contentLength, responseHeaders, cookies,
 				responseContent, locale);
 
 	}
-
+	
 	private void addSslScheme() {
 
 		try {

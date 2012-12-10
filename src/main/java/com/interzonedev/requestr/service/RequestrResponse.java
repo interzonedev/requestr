@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+
 public class RequestrResponse {
 
 	private final RequestrRequest request;
@@ -17,17 +19,31 @@ public class RequestrResponse {
 
 	private final Map<String, List<String>> headers;
 
+	private final List<Cookie> cookies;
+
 	private final String content;
 
 	private final Locale locale;
 
 	public RequestrResponse(RequestrRequest request, int status, String contentType, long contentLength,
-			Map<String, List<String>> headers, String content, Locale locale) {
+			Map<String, List<String>> headers, List<Cookie> cookies, String content, Locale locale) {
 		this.request = request;
 		this.status = status;
 		this.contentType = contentType;
 		this.contentLength = contentLength;
-		this.headers = Collections.unmodifiableMap(headers);
+
+		if (null == headers) {
+			this.headers = Collections.emptyMap();
+		} else {
+			this.headers = Collections.unmodifiableMap(headers);
+		}
+
+		if (null == cookies) {
+			this.cookies = Collections.emptyList();
+		} else {
+			this.cookies = Collections.unmodifiableList(cookies);
+		}
+
 		this.content = content;
 		this.locale = locale;
 	}
@@ -50,6 +66,10 @@ public class RequestrResponse {
 
 	public Map<String, List<String>> getHeaders() {
 		return headers;
+	}
+
+	public List<Cookie> getCookies() {
+		return cookies;
 	}
 
 	public String getContent() {

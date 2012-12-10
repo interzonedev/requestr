@@ -67,6 +67,22 @@
 	</div>
 
 	<div>
+		<c:choose>
+			<c:when test="${not empty response.cookies}">
+				<p>Headers:</p>
+				<c:forEach items="${response.cookies}" var="cookie">
+					<c:set var="cookieName" value="${cookie.name}" scope="page" />
+					<c:set var="cookieValue" value="${cookie.value}" scope="page" />
+					<p>${cookieName} = ${cookieValue}</p>
+				</c:forEach>
+			</c:when>
+			<c:otherwise>
+				<p>No cookies in response</p>
+			</c:otherwise>
+		</c:choose>
+	</div>
+
+	<div>
 		<p>Content:</p>
 		<p><c:out value="${response.content}" /></p>
 	</div>
