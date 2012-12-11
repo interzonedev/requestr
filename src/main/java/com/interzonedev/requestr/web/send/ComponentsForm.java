@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -21,10 +19,10 @@ public class ComponentsForm {
 	@NotEmpty
 	private String method;
 
-	//@Pattern(regexp = "^\\s*([^=]+=)*\\s*$")
+	// @Pattern(regexp = "^\\s*([^=]+=)*\\s*$")
 	private String headerValues;
 
-	//@Pattern(regexp = "^\\s*([^=]+=)*\\s*$")
+	// @Pattern(regexp = "^\\s*([^=]+=)*\\s*$")
 	private String parameterValues;
 
 	public String getUrl() {

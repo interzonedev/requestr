@@ -17,11 +17,13 @@ import javax.servlet.http.Cookie;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -43,6 +45,11 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.qos.logback.classic.Logger;
 
+/**
+ * An {@link RequestrService} implementation using the Apache HTTP Components library.
+ * 
+ * @author mark@interzonedev.com
+ */
 @Named("requestrService")
 public class RequestrServiceImpl implements RequestrService {
 
@@ -65,38 +72,78 @@ public class RequestrServiceImpl implements RequestrService {
 		addSslScheme();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.interzonedev.requestr.service.RequestrService#doRequest(com.interzonedev.requestr.service.RequestrRequest)
+	 */
 	@Override
 	public RequestrResponse doRequest(RequestrRequest requestrRequest) throws ClientProtocolException, IOException {
 
 		log.debug("doRequest: Starting request - " + requestrRequest);
 
 		// Assemble the HTTP request from the request value object.
-		HttpRequestBase httpRequestBase = getHttpRequestBaseFromRequestrRequest(requestrRequest);
+		HttpRequestBase httpRequestBase = getHttpRequestBaseFromRequest(requestrRequest);
 
 		log.debug("doRequest: Sending HTTP request");
 
 		// Send the HTTP request.
 		HttpResponse httpResponse = httpClient.execute(httpRequestBase);
 
+		log.debug("doRequest: Received HTTP response");
+
 		// Assemble the response value object from the HTTP response.
 		RequestrResponse requestrResponse = getRequestrResponseFromHttpResponse(requestrRequest, httpResponse);
 
-		log.debug("doRequest: Received response - " + requestrResponse);
+		log.debug("doRequest: Assembled response - " + requestrResponse);
 
 		return requestrResponse;
 
 	}
 
-	private HttpRequestBase getHttpRequestBaseFromRequestrRequest(RequestrRequest requestrRequest) {
+	/**
+	 * Assemble the {@link HttpRequestBase} instance that represents the HTTP request from the {@link RequestrRequest}
+	 * value object.
+	 * 
+	 * @param request
+	 *            The {@link RequestrRequest} value object that contains the components of the {@link HttpRequestBase}
+	 *            to assemble.
+	 * 
+	 * @return Returns an {@link HttpRequestBase} instance that represents the HTTP request from the
+	 *         {@link RequestrRequest} value object.
+	 */
+	private HttpRequestBase getHttpRequestBaseFromRequest(RequestrRequest request) {
 
-		HttpRequestBase httpRequestBase = null;
+		RequestrMethod method = request.getMethod();
 
-		String url = requestrRequest.getUrl();
-		RequestrMethod method = requestrRequest.getMethod();
-		Map<String, List<String>> requestHeaders = requestrRequest.getHeaders();
-		Map<String, List<String>> requestParameters = requestrRequest.getParameters();
+		List<NameValuePair> requestNameValuePairs = getNameValuePairsFromRequestParameters(request.getParameters());
+
+		String url = addQueryStringToUrl(method, request.getUrl(), requestNameValuePairs);
+
+		HttpRequestBase httpRequestBase = getRawHttpRequestBaseFromMethod(method, url);
+
+		addRequestHeadersToHttpRequestBase(httpRequestBase, request.getHeaders());
+
+		addRequestParametersToRequestBody(httpRequestBase, method, requestNameValuePairs);
+
+		return httpRequestBase;
+
+	}
+
+	/**
+	 * Turns the specified map of request parameters into a list of {@link NameValuePair}s. Request parameters with
+	 * multiple values result in corresponding multiple {@link NameValuePair} instances.
+	 * 
+	 * @param requestParameters
+	 *            A map of request parameters name/value pairs.
+	 * 
+	 * @return Returns a list of {@link NameValuePair}s that correspond to the request parameter name/value pairs.
+	 */
+	private List<NameValuePair> getNameValuePairsFromRequestParameters(Map<String, List<String>> requestParameters) {
 
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+
 		if ((null != requestParameters) && !requestParameters.isEmpty()) {
 			for (String parameterName : requestParameters.keySet()) {
 				List<String> parameterValues = requestParameters.get(parameterName);
@@ -106,45 +153,91 @@ public class RequestrServiceImpl implements RequestrService {
 			}
 		}
 
+		return nameValuePairs;
+	}
+
+	/**
+	 * For all request {@link RequestrMethod}s except for {@link RequestrMethod#POST} and {@link RequestrMethod#PUT},
+	 * transforms the specified request parameter name/value pairs into a query string and appends it to the specified
+	 * url.
+	 * 
+	 * @param method
+	 *            The {@link RequestrMethod} of the HTTP request.
+	 * @param url
+	 *            The url of the HTTP request.
+	 * @param requestNameValuePairs
+	 *            A list of {@link NameValuePair}s that correspond to the request parameter name/value pairs.
+	 * 
+	 * @return Returns the specified url with a query string appended if there are request parameter name/value pairs
+	 *         and the request {@link RequestrMethod} is not {@link RequestrMethod#POST} or {@link RequestrMethod#PUT}.
+	 */
+	private String addQueryStringToUrl(RequestrMethod method, String url, List<NameValuePair> requestNameValuePairs) {
+
+		String alteredUrl = url;
+
 		switch (method) {
 			case POST:
 			case PUT:
 				break;
 			default:
-				String queryString = URLEncodedUtils.format(nameValuePairs, "utf-8");
-				if (!url.contains("?")) {
-					url += "?";
+				String queryString = URLEncodedUtils.format(requestNameValuePairs, "utf-8");
+				if (!alteredUrl.contains("?")) {
+					alteredUrl += "?";
 				} else if (StringUtils.isNotBlank(queryString)) {
-					url += "&";
+					alteredUrl += "&";
 				}
-				url += queryString;
+				alteredUrl += queryString;
 		}
+
+		return alteredUrl;
+
+	}
+
+	/**
+	 * Gets an instance of {@link HttpRequestBase} according to the specified {@link RequestrMethod} initialized with
+	 * the specified url. The request headers and body are not set.
+	 * 
+	 * @param method
+	 *            The {@link RequestrMethod} of the HTTP request.
+	 * @param url
+	 *            The url of the HTTP request.
+	 * 
+	 * @return Returns an instance of {@link HttpRequestBase} according to the specified {@link RequestrMethod}
+	 *         initialized with the specified url.
+	 */
+	private HttpRequestBase getRawHttpRequestBaseFromMethod(RequestrMethod method, String url) {
 
 		switch (method) {
 			case GET:
-				httpRequestBase = new HttpGet(url);
-				break;
+				return new HttpGet(url);
 			case POST:
-				httpRequestBase = new HttpPost(url);
-				break;
+				return new HttpPost(url);
 			case PUT:
-				httpRequestBase = new HttpPut(url);
-				break;
+				return new HttpPut(url);
 			case DELETE:
-				httpRequestBase = new HttpDelete(url);
-				break;
+				return new HttpDelete(url);
 			case OPTIONS:
-				httpRequestBase = new HttpOptions(url);
-				break;
+				return new HttpOptions(url);
 			case HEAD:
-				httpRequestBase = new HttpHead(url);
-				break;
+				return new HttpHead(url);
 			case TRACE:
-				httpRequestBase = new HttpTrace(url);
-				break;
+				return new HttpTrace(url);
 			default:
 				throw new RuntimeException("Unsupported request method: " + method);
 		}
+
+	}
+
+	/**
+	 * Sets the specfied request headers on the specified {@link HttpRequestBase}.
+	 * 
+	 * @param httpRequestBase
+	 *            The {@link HttpRequestBase} that represents the HTTP request.
+	 * @param requestHeaders
+	 *            A map of request header name/value pairs.
+	 */
+	private void addRequestHeadersToHttpRequestBase(HttpRequestBase httpRequestBase,
+			Map<String, List<String>> requestHeaders) {
 
 		if ((null != requestHeaders) && !requestHeaders.isEmpty()) {
 			for (String requestHeaderName : requestHeaders.keySet()) {
@@ -155,13 +248,29 @@ public class RequestrServiceImpl implements RequestrService {
 			}
 		}
 
-		if (!nameValuePairs.isEmpty()) {
+	}
+
+	/**
+	 * For {@link RequestrMethod#POST} and {@link RequestrMethod#PUT} sets the request parameter name/value pairs in the
+	 * body of the specified {@link HttpRequestBase}.
+	 * 
+	 * @param httpRequestBase
+	 *            The {@link HttpRequestBase} that represents the HTTP request.
+	 * @param method
+	 *            The {@link RequestrMethod} of the HTTP request.
+	 * @param requestNameValuePairs
+	 *            A list of {@link NameValuePair}s that correspond to the request parameter name/value pairs.
+	 */
+	private void addRequestParametersToRequestBody(HttpRequestBase httpRequestBase, RequestrMethod method,
+			List<NameValuePair> requestNameValuePairs) {
+
+		if (!requestNameValuePairs.isEmpty()) {
 			switch (method) {
 				case POST:
 				case PUT:
 					UrlEncodedFormEntity requestBodyEntity;
 					try {
-						requestBodyEntity = new UrlEncodedFormEntity(nameValuePairs, "utf-8");
+						requestBodyEntity = new UrlEncodedFormEntity(requestNameValuePairs, "utf-8");
 					} catch (UnsupportedEncodingException uee) {
 						String errorMessage = "Error creating request body";
 						log.error("doRequest: " + errorMessage, uee);
@@ -172,12 +281,26 @@ public class RequestrServiceImpl implements RequestrService {
 			}
 		}
 
-		return httpRequestBase;
-
 	}
 
-	private RequestrResponse getRequestrResponseFromHttpResponse(RequestrRequest requestrRequest,
-			HttpResponse httpResponse) throws ParseException, IOException {
+	/**
+	 * Assembles a {@link RequestrResponse} value object from the specified {@link HttpResponse}.
+	 * 
+	 * @param request
+	 *            The {@link RequestrRequest} value object that represents the originiating HTTP request.
+	 * @param httpResponse
+	 *            The {@link HttpResponse} that represents the response to transform into a {@link RequestrResponse}.
+	 * 
+	 * @return Returns a {@link RequestrResponse} value object assembled from the components of the specified
+	 *         {@link HttpResponse}.
+	 * 
+	 * @throws ParseException
+	 *             Thrown if there was an error turning the response body into a string.
+	 * @throws IOException
+	 *             Thrown if there was an error turning the response body into a string.
+	 */
+	private RequestrResponse getRequestrResponseFromHttpResponse(RequestrRequest request, HttpResponse httpResponse)
+			throws ParseException, IOException {
 
 		HttpEntity responseEntity = httpResponse.getEntity();
 
@@ -191,9 +314,32 @@ public class RequestrServiceImpl implements RequestrService {
 
 		long contentLength = responseEntity.getContentLength();
 
-		List<Cookie> cookies = new ArrayList<Cookie>();
+		Map<String, Cookie> cookies = getCookiesFromResponse(httpResponse);
+
+		Map<String, List<String>> responseHeaders = getResponseHeaders(httpResponse);
+
+		String responseContent = EntityUtils.toString(responseEntity);
+
+		Locale locale = httpResponse.getLocale();
+
+		return new RequestrResponse(request, statusCode, contentType, contentLength, responseHeaders, cookies,
+				responseContent, locale);
+
+	}
+
+	/**
+	 * Gets the headers from the specified {@link HttpResponse} and turns them into a map of header names to lists of
+	 * header values.
+	 * 
+	 * @param httpResponse
+	 *            The {@link HttpResponse} that represents the response from which to get the headers.
+	 * 
+	 * @return Returns a map of header names to lists of header values.
+	 */
+	private Map<String, List<String>> getResponseHeaders(HttpResponse httpResponse) {
 
 		Map<String, List<String>> responseHeaders = new HashMap<String, List<String>>();
+
 		Header[] responseHeaderValues = httpResponse.getAllHeaders();
 		for (Header responseHeaderValue : responseHeaderValues) {
 			String reponseHeaderName = responseHeaderValue.getName();
@@ -207,15 +353,64 @@ public class RequestrServiceImpl implements RequestrService {
 			headerValues.add(reponseHeaderValue);
 		}
 
-		String responseContent = EntityUtils.toString(responseEntity);
-
-		Locale locale = httpResponse.getLocale();
-
-		return new RequestrResponse(requestrRequest, statusCode, contentType, contentLength, responseHeaders, cookies,
-				responseContent, locale);
+		return responseHeaders;
 
 	}
-	
+
+	/**
+	 * Gets a map of cookie names to {@link Cookie} instances by parsing the "Set-Cookie" headers in the specified
+	 * {@link HttpResponse}.
+	 * 
+	 * @param httpResponse
+	 *            The {@link HttpResponse} that represents the response from which to get the headers.
+	 * 
+	 * @return Returns a map of cookie names to {@link Cookie} instances by parsing the "Set-Cookie" headers in the
+	 *         specified {@link HttpResponse}.
+	 */
+	private Map<String, Cookie> getCookiesFromResponse(HttpResponse httpResponse) {
+
+		Map<String, Cookie> cookies = new HashMap<String, Cookie>();
+
+		Header[] cookieHeaders = httpResponse.getHeaders("Set-Cookie");
+
+		if ((null == cookieHeaders) || (0 == cookieHeaders.length)) {
+			return cookies;
+		}
+
+		for (Header cookieHeader : cookieHeaders) {
+
+			HeaderElement[] cookieHeaderElements = cookieHeader.getElements();
+			for (HeaderElement cookieHeaderElement : cookieHeaderElements) {
+
+				String cookieName = cookieHeaderElement.getName();
+				String cookieValue = cookieHeaderElement.getValue();
+
+				if (StringUtils.isNotBlank(cookieName)) {
+					try {
+						Cookie cookie = new Cookie(cookieName, cookieValue);
+
+						// TODO - Parse through cookie parameters for path, age, domain, etc. and set them on the
+						// cookie.
+						@SuppressWarnings("unused")
+						NameValuePair[] cookieParameters = cookieHeaderElement.getParameters();
+
+						cookies.put(cookieName, cookie);
+					} catch (Throwable t) {
+						String warnMessage = "Error creating cookie with name " + cookieName;
+						log.warn("getCookiesFromResponse: " + warnMessage, t);
+					}
+				}
+
+			}
+
+		}
+
+		return cookies;
+	}
+
+	/**
+	 * Adds an SSL {@link Scheme} to the registry of the connection manager of the {@link HttpClient}.
+	 */
 	private void addSslScheme() {
 
 		try {

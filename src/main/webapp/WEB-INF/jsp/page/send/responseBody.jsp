@@ -69,9 +69,10 @@
 	<div>
 		<c:choose>
 			<c:when test="${not empty response.cookies}">
-				<p>Headers:</p>
-				<c:forEach items="${response.cookies}" var="cookie">
-					<c:set var="cookieName" value="${cookie.name}" scope="page" />
+				<p>Cookies:</p>
+				<c:forEach items="${response.cookies}" var="cookieItem">
+					<c:set var="cookieName" value="${cookieItem.key}" scope="page" />
+					<c:set var="cookie" value="${cookieItem.value}" scope="page" />
 					<c:set var="cookieValue" value="${cookie.value}" scope="page" />
 					<p>${cookieName} = ${cookieValue}</p>
 				</c:forEach>

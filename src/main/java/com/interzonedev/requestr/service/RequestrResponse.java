@@ -19,14 +19,15 @@ public class RequestrResponse {
 
 	private final Map<String, List<String>> headers;
 
-	private final List<Cookie> cookies;
+	private final Map<String, Cookie> cookies;
 
 	private final String content;
 
 	private final Locale locale;
 
 	public RequestrResponse(RequestrRequest request, int status, String contentType, long contentLength,
-			Map<String, List<String>> headers, List<Cookie> cookies, String content, Locale locale) {
+			Map<String, List<String>> headers, Map<String, Cookie> cookies, String content, Locale locale) {
+
 		this.request = request;
 		this.status = status;
 		this.contentType = contentType;
@@ -39,13 +40,14 @@ public class RequestrResponse {
 		}
 
 		if (null == cookies) {
-			this.cookies = Collections.emptyList();
+			this.cookies = Collections.emptyMap();
 		} else {
-			this.cookies = Collections.unmodifiableList(cookies);
+			this.cookies = Collections.unmodifiableMap(cookies);
 		}
 
 		this.content = content;
 		this.locale = locale;
+
 	}
 
 	public RequestrRequest getRequest() {
@@ -68,7 +70,7 @@ public class RequestrResponse {
 		return headers;
 	}
 
-	public List<Cookie> getCookies() {
+	public Map<String, Cookie> getCookies() {
 		return cookies;
 	}
 

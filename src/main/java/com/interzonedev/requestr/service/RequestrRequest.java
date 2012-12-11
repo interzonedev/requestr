@@ -20,10 +20,22 @@ public class RequestrRequest {
 
 	public RequestrRequest(String url, RequestrMethod method, Map<String, List<String>> headers,
 			Map<String, List<String>> parameters) {
+
 		this.url = url;
 		this.method = method;
-		this.headers = Collections.unmodifiableMap(headers);
-		this.parameters = Collections.unmodifiableMap(parameters);
+
+		if (null == headers) {
+			this.headers = Collections.emptyMap();
+		} else {
+			this.headers = Collections.unmodifiableMap(headers);
+		}
+
+		if (null == parameters) {
+			this.parameters = Collections.emptyMap();
+		} else {
+			this.parameters = Collections.unmodifiableMap(parameters);
+		}
+
 	}
 
 	public String getUrl() {
