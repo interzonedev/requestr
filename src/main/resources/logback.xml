@@ -15,6 +15,7 @@
 	<logger name="org.hibernate" level="INFO" />
 
 	<logger name="com.interzonedev.requestr" level="DEBUG" />
+	<logger name="com.interzonedev.httpagent" level="DEBUG" />
 
 	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />

@@ -8,8 +8,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.interzonedev.requestr.service.RequestrMethod;
-import com.interzonedev.requestr.service.RequestrRequest;
+import com.interzonedev.httpagent.Method;
+import com.interzonedev.httpagent.Request;
 
 public class ComponentsForm {
 
@@ -57,8 +57,8 @@ public class ComponentsForm {
 		this.parameterValues = parameterValues;
 	}
 
-	public RequestrRequest toRequest() {
-		RequestrMethod requestMethod = RequestrMethod.valueOf(getMethod());
+	public Request toRequest() {
+		Method requestMethod = Method.valueOf(getMethod());
 
 		Map<String, List<String>> headers = new HashMap<String, List<String>>();
 
@@ -68,7 +68,7 @@ public class ComponentsForm {
 
 		translateInputToComponents(getParameterValues(), parameters);
 
-		return new RequestrRequest(getUrl(), requestMethod, headers, parameters);
+		return new Request(getUrl(), requestMethod, headers, parameters);
 	}
 
 	private void translateInputToComponents(String input, Map<String, List<String>> components) {

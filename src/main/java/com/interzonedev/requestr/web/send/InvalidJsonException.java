@@ -1,4 +1,4 @@
-package com.interzonedev.requestr.service;
+package com.interzonedev.requestr.web.send;
 
 public class InvalidJsonException extends Exception {
 

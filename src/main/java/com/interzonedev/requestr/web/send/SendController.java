@@ -17,11 +17,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.interzonedev.requestr.service.InvalidJsonException;
-import com.interzonedev.requestr.service.RequestrMethod;
-import com.interzonedev.requestr.service.RequestrRequest;
-import com.interzonedev.requestr.service.RequestrResponse;
-import com.interzonedev.requestr.service.RequestrService;
+import com.interzonedev.httpagent.Method;
+import com.interzonedev.httpagent.Request;
+import com.interzonedev.httpagent.RequestService;
+import com.interzonedev.httpagent.Response;
 import com.interzonedev.requestr.web.RequestrController;
 
 @Controller
@@ -33,8 +32,8 @@ public class SendController extends RequestrController {
 	private static final String RESPONSE_VIEW = "send/response";
 
 	@Inject
-	@Named("requestrService")
-	private RequestrService requestrService;
+	@Named("requestService")
+	private RequestService requestService;
 
 	private Map<String, String> requestMethods;
 
@@ -42,13 +41,13 @@ public class SendController extends RequestrController {
 	public void init() {
 		Map<String, String> requestMethodsMutable = new LinkedHashMap<String, String>();
 
-		requestMethodsMutable.put(RequestrMethod.GET.toString(), RequestrMethod.GET.toString());
-		requestMethodsMutable.put(RequestrMethod.POST.toString(), RequestrMethod.POST.toString());
-		requestMethodsMutable.put(RequestrMethod.PUT.toString(), RequestrMethod.PUT.toString());
-		requestMethodsMutable.put(RequestrMethod.DELETE.toString(), RequestrMethod.DELETE.toString());
-		requestMethodsMutable.put(RequestrMethod.OPTIONS.toString(), RequestrMethod.OPTIONS.toString());
-		requestMethodsMutable.put(RequestrMethod.HEAD.toString(), RequestrMethod.HEAD.toString());
-		requestMethodsMutable.put(RequestrMethod.TRACE.toString(), RequestrMethod.TRACE.toString());
+		requestMethodsMutable.put(Method.GET.toString(), Method.GET.toString());
+		requestMethodsMutable.put(Method.POST.toString(), Method.POST.toString());
+		requestMethodsMutable.put(Method.PUT.toString(), Method.PUT.toString());
+		requestMethodsMutable.put(Method.DELETE.toString(), Method.DELETE.toString());
+		requestMethodsMutable.put(Method.OPTIONS.toString(), Method.OPTIONS.toString());
+		requestMethodsMutable.put(Method.HEAD.toString(), Method.HEAD.toString());
+		requestMethodsMutable.put(Method.TRACE.toString(), Method.TRACE.toString());
 
 		requestMethods = Collections.unmodifiableMap(requestMethodsMutable);
 	}
@@ -78,18 +77,18 @@ public class SendController extends RequestrController {
 			return JSON_FORM_VIEW;
 		}
 
-		RequestrRequest requestrRequest = null;
+		Request request = null;
 		try {
-			requestrRequest = jsonForm.toRequest();
+			request = jsonForm.toRequest();
 		} catch (InvalidJsonException ije) {
 			log.debug("sendJsonRequest: JSON has errors - " + ije.getMessage());
 			result.rejectValue("input", "InvalidJson.jsonForm.input", new Object[] { ije.getMessage() }, null);
 			return JSON_FORM_VIEW;
 		}
 
-		RequestrResponse requestrResponse = null;
+		Response response = null;
 		try {
-			requestrResponse = requestrService.doRequest(requestrRequest);
+			response = requestService.doRequest(request);
 		} catch (Throwable t) {
 			log.error("sendJsonRequest: Error making HTTP request", t);
 			String errorMessage = t.getMessage();
@@ -98,7 +97,7 @@ public class SendController extends RequestrController {
 			return JSON_FORM_VIEW;
 		}
 
-		model.addAttribute("response", requestrResponse);
+		model.addAttribute("response", response);
 
 		log.debug("sendJsonRequest: End");
 
@@ -125,11 +124,11 @@ public class SendController extends RequestrController {
 			return COMPONENTS_FORM_VIEW;
 		}
 
-		RequestrRequest requestrRequest = componentsForm.toRequest();
+		Request request = componentsForm.toRequest();
 
-		RequestrResponse requestrResponse = null;
+		Response response = null;
 		try {
-			requestrResponse = requestrService.doRequest(requestrRequest);
+			response = requestService.doRequest(request);
 		} catch (Throwable t) {
 			log.error("sendComponentsRequest: Error making HTTP request", t);
 			String errorMessage = t.getMessage();
@@ -138,7 +137,7 @@ public class SendController extends RequestrController {
 			return COMPONENTS_FORM_VIEW;
 		}
 
-		model.addAttribute("response", requestrResponse);
+		model.addAttribute("response", response);
 
 		log.debug("sendComponentsRequest: End");
 

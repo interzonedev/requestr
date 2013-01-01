@@ -14,9 +14,8 @@ import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.interzonedev.requestr.service.InvalidJsonException;
-import com.interzonedev.requestr.service.RequestrMethod;
-import com.interzonedev.requestr.service.RequestrRequest;
+import com.interzonedev.httpagent.Method;
+import com.interzonedev.httpagent.Request;
 
 public class JsonForm {
 
@@ -33,7 +32,7 @@ public class JsonForm {
 		this.input = input;
 	}
 
-	public RequestrRequest toRequest() throws InvalidJsonException {
+	public Request toRequest() throws InvalidJsonException {
 
 		Map<String, Object> requestValues = null;
 		try {
@@ -64,9 +63,9 @@ public class JsonForm {
 			throw new InvalidJsonException("The \"method\" key must be set");
 		}
 
-		RequestrMethod requestMethod = null;
+		Method requestMethod = null;
 		try {
-			requestMethod = RequestrMethod.valueOf(method.toUpperCase());
+			requestMethod = Method.valueOf(method.toUpperCase());
 		} catch (IllegalArgumentException iae) {
 			throw new InvalidJsonException("The \"method\" value of \"" + method + "\" is invalid");
 		}
@@ -93,6 +92,6 @@ public class JsonForm {
 			}
 		}
 
-		return new RequestrRequest(url, requestMethod, headers, parameters);
+		return new Request(url, requestMethod, headers, parameters);
 	}
 }
