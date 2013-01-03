@@ -9,24 +9,7 @@
 
 	<context:component-scan base-package="com.interzonedev.requestr.service" />
 
-	<bean id="httpConnectionManager" class="org.apache.http.impl.conn.PoolingClientConnectionManager">
-		<property name="defaultMaxPerRoute" value="200" />
-		<property name="maxTotal" value="100" />
-	</bean>
-
-	<bean id="httpClient" class="org.apache.http.impl.client.DefaultHttpClient">
-		<constructor-arg index="0" ref="httpConnectionManager" />
-	</bean>
-
-	<bean id="keystoreFilePath" class="java.lang.String">
-		<constructor-arg value="com/interzonedev/requestr/ssl/client-truststore.jks" />
-	</bean>
-
-	<bean id="keystorePassword" class="java.lang.String">
-		<constructor-arg value="password" />
-	</bean>
-
-	<bean id="requestService" class="com.interzonedev.httpagent.HttpComponentsRequestService">
+	<bean id="httpComponentsRequestService" class="com.interzonedev.httpagent.HttpComponentsRequestService">
 		<!-- maxTotalHttpConnections -->
 		<constructor-arg index="0" value="50" />
 		<!-- defaultMaxHttpConnectionsPerRoute -->
@@ -36,4 +19,9 @@
 		<!-- maximumThreadPoolSize -->
 		<constructor-arg index="3" value="100" />
 	</bean>
+
+	<bean id="ningRequestService" class="com.interzonedev.httpagent.NingRequestService" />
+
+	<bean id="requestService" parent="ningRequestService" />
+
 </beans>

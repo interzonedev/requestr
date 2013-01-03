@@ -3,6 +3,7 @@ package com.interzonedev.requestr.web.send;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -88,7 +89,10 @@ public class SendController extends RequestrController {
 
 		Response response = null;
 		try {
-			response = requestService.doRequest(request);
+			log.debug("sendJsonRequest: Sending request " + request);
+			Future<Response> responseFuture = requestService.doRequest(request);
+			log.debug("sendJsonRequest: Waiting for response");
+			response = responseFuture.get();
 		} catch (Throwable t) {
 			log.error("sendJsonRequest: Error making HTTP request", t);
 			String errorMessage = t.getMessage();
@@ -128,7 +132,10 @@ public class SendController extends RequestrController {
 
 		Response response = null;
 		try {
-			response = requestService.doRequest(request);
+			log.debug("sendComponentsRequest: Sending request " + request);
+			Future<Response> responseFuture = requestService.doRequest(request);
+			log.debug("sendComponentsRequest: Waiting for response");
+			response = responseFuture.get();
 		} catch (Throwable t) {
 			log.error("sendComponentsRequest: Error making HTTP request", t);
 			String errorMessage = t.getMessage();
