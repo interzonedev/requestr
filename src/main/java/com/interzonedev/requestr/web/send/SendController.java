@@ -28,127 +28,127 @@ import com.interzonedev.requestr.web.RequestrController;
 @RequestMapping(value = "/send")
 public class SendController extends RequestrController {
 
-	private static final String JSON_FORM_VIEW = "send/json/jsonForm";
-	private static final String COMPONENTS_FORM_VIEW = "send/components/componentsForm";
-	private static final String RESPONSE_VIEW = "send/response";
+    private static final String JSON_FORM_VIEW = "send/json/jsonForm";
+    private static final String COMPONENTS_FORM_VIEW = "send/components/componentsForm";
+    private static final String RESPONSE_VIEW = "send/response";
 
-	@Inject
-	@Named("requestService")
-	private RequestService requestService;
+    @Inject
+    @Named("requestService")
+    private RequestService requestService;
 
-	private Map<String, String> requestMethods;
+    private Map<String, String> requestMethods;
 
-	@PostConstruct
-	public void init() {
-		Map<String, String> requestMethodsMutable = new LinkedHashMap<String, String>();
+    @PostConstruct
+    public void init() {
+        Map<String, String> requestMethodsMutable = new LinkedHashMap<String, String>();
 
-		requestMethodsMutable.put(Method.GET.toString(), Method.GET.toString());
-		requestMethodsMutable.put(Method.POST.toString(), Method.POST.toString());
-		requestMethodsMutable.put(Method.PUT.toString(), Method.PUT.toString());
-		requestMethodsMutable.put(Method.DELETE.toString(), Method.DELETE.toString());
-		requestMethodsMutable.put(Method.OPTIONS.toString(), Method.OPTIONS.toString());
-		requestMethodsMutable.put(Method.HEAD.toString(), Method.HEAD.toString());
-		requestMethodsMutable.put(Method.TRACE.toString(), Method.TRACE.toString());
+        requestMethodsMutable.put(Method.GET.toString(), Method.GET.toString());
+        requestMethodsMutable.put(Method.POST.toString(), Method.POST.toString());
+        requestMethodsMutable.put(Method.PUT.toString(), Method.PUT.toString());
+        requestMethodsMutable.put(Method.DELETE.toString(), Method.DELETE.toString());
+        requestMethodsMutable.put(Method.OPTIONS.toString(), Method.OPTIONS.toString());
+        requestMethodsMutable.put(Method.HEAD.toString(), Method.HEAD.toString());
+        requestMethodsMutable.put(Method.TRACE.toString(), Method.TRACE.toString());
 
-		requestMethods = Collections.unmodifiableMap(requestMethodsMutable);
-	}
+        requestMethods = Collections.unmodifiableMap(requestMethodsMutable);
+    }
 
-	@ModelAttribute("requestMethods")
-	public Map<String, String> getRequestMethods() {
-		return requestMethods;
-	}
+    @ModelAttribute("requestMethods")
+    public Map<String, String> getRequestMethods() {
+        return requestMethods;
+    }
 
-	@RequestMapping(method = RequestMethod.GET, value = "json")
-	public String displayJsonForm(Model model) {
-		log.debug("displayJsonForm: Start");
+    @RequestMapping(method = RequestMethod.GET, value = "json")
+    public String displayJsonForm(Model model) {
+        log.debug("displayJsonForm: Start");
 
-		model.addAttribute("jsonForm", new JsonForm());
+        model.addAttribute("jsonForm", new JsonForm());
 
-		log.debug("displayJsonForm: End");
+        log.debug("displayJsonForm: End");
 
-		return JSON_FORM_VIEW;
-	}
+        return JSON_FORM_VIEW;
+    }
 
-	@RequestMapping(method = RequestMethod.POST, value = "json")
-	public String sendJsonRequest(Model model, @Valid JsonForm jsonForm, BindingResult result) {
-		log.debug("sendJsonRequest: Start");
+    @RequestMapping(method = RequestMethod.POST, value = "json")
+    public String sendJsonRequest(Model model, @Valid JsonForm jsonForm, BindingResult result) {
+        log.debug("sendJsonRequest: Start");
 
-		if (result.hasErrors()) {
-			log.debug("sendJsonRequest: Form has errors");
-			return JSON_FORM_VIEW;
-		}
+        if (result.hasErrors()) {
+            log.debug("sendJsonRequest: Form has errors");
+            return JSON_FORM_VIEW;
+        }
 
-		Request request = null;
-		try {
-			request = jsonForm.toRequest();
-		} catch (InvalidJsonException ije) {
-			log.debug("sendJsonRequest: JSON has errors - " + ije.getMessage());
-			result.rejectValue("input", "InvalidJson.jsonForm.input", new Object[] { ije.getMessage() }, null);
-			return JSON_FORM_VIEW;
-		}
+        Request request = null;
+        try {
+            request = jsonForm.toRequest();
+        } catch (InvalidJsonException ije) {
+            log.debug("sendJsonRequest: JSON has errors - " + ije.getMessage());
+            result.rejectValue("input", "InvalidJson.jsonForm.input", new Object[] { ije.getMessage() }, null);
+            return JSON_FORM_VIEW;
+        }
 
-		Response response = null;
-		try {
-			log.debug("sendJsonRequest: Sending request " + request);
-			Future<Response> responseFuture = requestService.doRequest(request);
-			log.debug("sendJsonRequest: Waiting for response");
-			response = responseFuture.get();
-		} catch (Throwable t) {
-			log.error("sendJsonRequest: Error making HTTP request", t);
-			String errorMessage = t.getMessage();
-			String stackTrace = ExceptionUtils.getStackTrace(t);
-			result.reject("error.request", new Object[] { errorMessage, stackTrace }, null);
-			return JSON_FORM_VIEW;
-		}
+        Response response = null;
+        try {
+            log.debug("sendJsonRequest: Sending request " + request);
+            Future<Response> responseFuture = requestService.doRequest(request);
+            log.debug("sendJsonRequest: Waiting for response");
+            response = responseFuture.get();
+        } catch (Throwable t) {
+            log.error("sendJsonRequest: Error making HTTP request", t);
+            String errorMessage = t.getMessage();
+            String stackTrace = ExceptionUtils.getStackTrace(t);
+            result.reject("error.request", new Object[] { errorMessage, stackTrace }, null);
+            return JSON_FORM_VIEW;
+        }
 
-		model.addAttribute("response", response);
+        model.addAttribute("response", response);
 
-		log.debug("sendJsonRequest: End");
+        log.debug("sendJsonRequest: End");
 
-		return RESPONSE_VIEW;
-	}
+        return RESPONSE_VIEW;
+    }
 
-	@RequestMapping(method = RequestMethod.GET, value = "components")
-	public String displayComponentsForm(Model model) {
-		log.debug("displayComponentsForm: Start");
+    @RequestMapping(method = RequestMethod.GET, value = "components")
+    public String displayComponentsForm(Model model) {
+        log.debug("displayComponentsForm: Start");
 
-		model.addAttribute("componentsForm", new ComponentsForm());
+        model.addAttribute("componentsForm", new ComponentsForm());
 
-		log.debug("displayComponentsForm: End");
+        log.debug("displayComponentsForm: End");
 
-		return COMPONENTS_FORM_VIEW;
-	}
+        return COMPONENTS_FORM_VIEW;
+    }
 
-	@RequestMapping(method = RequestMethod.POST, value = "components")
-	public String sendComponentsRequest(Model model, @Valid ComponentsForm componentsForm, BindingResult result) {
-		log.debug("sendComponentsRequest: Start");
+    @RequestMapping(method = RequestMethod.POST, value = "components")
+    public String sendComponentsRequest(Model model, @Valid ComponentsForm componentsForm, BindingResult result) {
+        log.debug("sendComponentsRequest: Start");
 
-		if (result.hasErrors()) {
-			log.debug("sendComponentsRequest: Form has errors");
-			return COMPONENTS_FORM_VIEW;
-		}
+        if (result.hasErrors()) {
+            log.debug("sendComponentsRequest: Form has errors");
+            return COMPONENTS_FORM_VIEW;
+        }
 
-		Request request = componentsForm.toRequest();
+        Request request = componentsForm.toRequest();
 
-		Response response = null;
-		try {
-			log.debug("sendComponentsRequest: Sending request " + request);
-			Future<Response> responseFuture = requestService.doRequest(request);
-			log.debug("sendComponentsRequest: Waiting for response");
-			response = responseFuture.get();
-		} catch (Throwable t) {
-			log.error("sendComponentsRequest: Error making HTTP request", t);
-			String errorMessage = t.getMessage();
-			String stackTrace = ExceptionUtils.getStackTrace(t);
-			result.reject("error.request", new Object[] { errorMessage, stackTrace }, null);
-			return COMPONENTS_FORM_VIEW;
-		}
+        Response response = null;
+        try {
+            log.debug("sendComponentsRequest: Sending request " + request);
+            Future<Response> responseFuture = requestService.doRequest(request);
+            log.debug("sendComponentsRequest: Waiting for response");
+            response = responseFuture.get();
+        } catch (Throwable t) {
+            log.error("sendComponentsRequest: Error making HTTP request", t);
+            String errorMessage = t.getMessage();
+            String stackTrace = ExceptionUtils.getStackTrace(t);
+            result.reject("error.request", new Object[] { errorMessage, stackTrace }, null);
+            return COMPONENTS_FORM_VIEW;
+        }
 
-		model.addAttribute("response", response);
+        model.addAttribute("response", response);
 
-		log.debug("sendComponentsRequest: End");
+        log.debug("sendComponentsRequest: End");
 
-		return RESPONSE_VIEW;
-	}
+        return RESPONSE_VIEW;
+    }
 
 }

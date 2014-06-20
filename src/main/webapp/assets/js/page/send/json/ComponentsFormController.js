@@ -1,198 +1,198 @@
 (function($) {
-	"use strict";
+    "use strict";
 
-	oj.namespace("page.send.json");
+    oj.namespace("page.send.json");
 
-	page.send.json.ComponentsFormController = oj.OjObject.extend({
+    page.send.json.ComponentsFormController = oj.OjObject.extend({
 
-		$componentsForm: null,
-		$parameterValuesInput: null,
-		$parametersContainer: null,
-		$addParameterTrigger: null,
-		$headerValuesInput: null,
-		$headersContainer: null,
-		$addHeaderTrigger: null,
-		numNameValuePairs: 0,
-		nameValuePairTemplateHtml: null,
+        $componentsForm: null,
+        $parameterValuesInput: null,
+        $parametersContainer: null,
+        $addParameterTrigger: null,
+        $headerValuesInput: null,
+        $headersContainer: null,
+        $addHeaderTrigger: null,
+        numNameValuePairs: 0,
+        nameValuePairTemplateHtml: null,
 
-		constructor: function(params) {
-			this.base(params);
-		},
+        constructor: function(params) {
+            this.base(params);
+        },
 
-		init: function() {
-			var $nameValuePairTemplate;
+        init: function() {
+            var $nameValuePairTemplate;
 
-			this.base();
+            this.base();
 
-			this.$componentsForm = $("#componentsForm");
-			this.$parameterValuesInput = $("#parameterValues");
-			this.$parametersContainer = $("#parametersContainer");
-			this.$addParameterTrigger = $("#addParameterTrigger");
-			this.$headerValuesInput = $("#headerValues");
-			this.$headersContainer = $("#headersContainer");
-			this.$addHeaderTrigger = $("#addHeaderTrigger");
+            this.$componentsForm = $("#componentsForm");
+            this.$parameterValuesInput = $("#parameterValues");
+            this.$parametersContainer = $("#parametersContainer");
+            this.$addParameterTrigger = $("#addParameterTrigger");
+            this.$headerValuesInput = $("#headerValues");
+            this.$headersContainer = $("#headersContainer");
+            this.$addHeaderTrigger = $("#addHeaderTrigger");
 
-			$nameValuePairTemplate = $("#nameValuePairTemplate");
-			this.nameValuePairTemplateHtml = $nameValuePairTemplate.html(); 
+            $nameValuePairTemplate = $("#nameValuePairTemplate");
+            this.nameValuePairTemplateHtml = $nameValuePairTemplate.html(); 
 
-			this.initializeNameValuePairs(this.$parameterValuesInput, this.$parametersContainer);
-			this.initializeNameValuePairs(this.$headerValuesInput, this.$headersContainer);
+            this.initializeNameValuePairs(this.$parameterValuesInput, this.$parametersContainer);
+            this.initializeNameValuePairs(this.$headerValuesInput, this.$headersContainer);
 
-			oj.$.bindAsEventListener(this.$addParameterTrigger, "click", this, this.addParameter);
-			oj.$.bindAsEventListener(this.$addHeaderTrigger, "click", this, this.addHeader);
-			oj.$.bindAsEventListener(this.$componentsForm, "submit", this, this.handleFormSubmit);
-		},
+            oj.$.bindAsEventListener(this.$addParameterTrigger, "click", this, this.addParameter);
+            oj.$.bindAsEventListener(this.$addHeaderTrigger, "click", this, this.addHeader);
+            oj.$.bindAsEventListener(this.$componentsForm, "submit", this, this.handleFormSubmit);
+        },
 
-		initializeNameValuePairs: function($valuesInput, $parameterNameValuePairsContainer) {
-			var _this, values, nameValuePairs;
+        initializeNameValuePairs: function($valuesInput, $parameterNameValuePairsContainer) {
+            var _this, values, nameValuePairs;
 
-			_this = this;
+            _this = this;
 
-			values = $valuesInput.val();
-			if (values) {
-				nameValuePairs = values.split("&"); 
+            values = $valuesInput.val();
+            if (values) {
+                nameValuePairs = values.split("&"); 
 
-				$.each(nameValuePairs, function(i, nameValuePair) {
-					var nameValueParts, name, value;
+                $.each(nameValuePairs, function(i, nameValuePair) {
+                    var nameValueParts, name, value;
 
-					nameValueParts = nameValuePair.split("=");
-					name = nameValueParts[0];
-					value = nameValueParts[1];
+                    nameValueParts = nameValuePair.split("=");
+                    name = nameValueParts[0];
+                    value = nameValueParts[1];
 
-					_this.addNameValuePair($parameterNameValuePairsContainer, name, value); 
-				});
-			}
-		},
+                    _this.addNameValuePair($parameterNameValuePairsContainer, name, value); 
+                });
+            }
+        },
 
-		addNameValuePair: function($nameValuePairsContainer, name, value) {
-			var context, nameValuePairHtml;
+        addNameValuePair: function($nameValuePairsContainer, name, value) {
+            var context, nameValuePairHtml;
 
-			context = {
-				count: this.numNameValuePairs
-			};
+            context = {
+                count: this.numNameValuePairs
+            };
 
-			if (name) {
-				context.name = name;
-			}
+            if (name) {
+                context.name = name;
+            }
 
-			if (value) {
-				context.value = value;
-			}
+            if (value) {
+                context.value = value;
+            }
 
-			nameValuePairHtml = Mustache.to_html(this.nameValuePairTemplateHtml, context);
-			
-			$nameValuePairsContainer.append(nameValuePairHtml);
+            nameValuePairHtml = Mustache.to_html(this.nameValuePairTemplateHtml, context);
+            
+            $nameValuePairsContainer.append(nameValuePairHtml);
 
-			oj.$.bindAsEventListener($(".control-deleteNameValuePair"), "click", this, this.deleteNameValuePair);
+            oj.$.bindAsEventListener($(".control-deleteNameValuePair"), "click", this, this.deleteNameValuePair);
 
-			this.numNameValuePairs += 1;
-		},
+            this.numNameValuePairs += 1;
+        },
 
-		addParameter: function(evt) {
-			evt.preventDefault();
+        addParameter: function(evt) {
+            evt.preventDefault();
 
-			this.addNameValuePair(this.$parametersContainer);
-		},
+            this.addNameValuePair(this.$parametersContainer);
+        },
 
-		addHeader: function(evt) {
-			evt.preventDefault();
+        addHeader: function(evt) {
+            evt.preventDefault();
 
-			this.addNameValuePair(this.$headersContainer);
-		},
+            this.addNameValuePair(this.$headersContainer);
+        },
 
-		deleteNameValuePair: function(evt) {
-			var $target, $nameValueContainer;
+        deleteNameValuePair: function(evt) {
+            var $target, $nameValueContainer;
 
-			evt.preventDefault();
+            evt.preventDefault();
 
-			$target = $(evt.target);
-			$nameValueContainer = $target.parent();
-			$nameValueContainer.remove();
-		},
+            $target = $(evt.target);
+            $nameValueContainer = $target.parent();
+            $nameValueContainer.remove();
+        },
 
-		handleFormSubmit: function(evt) {
-			if (this.validateForm()) {
-				this.updateValuesFormField(this.$parametersContainer, this.$parameterValuesInput);
-				this.updateValuesFormField(this.$headersContainer, this.$headerValuesInput);
-			} else {
-				evt.preventDefault();
-			}		
-		},
+        handleFormSubmit: function(evt) {
+            if (this.validateForm()) {
+                this.updateValuesFormField(this.$parametersContainer, this.$parameterValuesInput);
+                this.updateValuesFormField(this.$headersContainer, this.$headerValuesInput);
+            } else {
+                evt.preventDefault();
+            }        
+        },
 
-		validateForm: function() {
-			var _this, valid, $inputs;
+        validateForm: function() {
+            var _this, valid, $inputs;
 
-			_this = this;
+            _this = this;
 
-			valid = true;
+            valid = true;
 
-			this.clearFormErrors();
+            this.clearFormErrors();
 
-			$inputs = this.getActiveInputs();
+            $inputs = this.getActiveInputs();
 
-			$inputs.each(function(i, input) {
-				var $input, $inputGroup, $errorContainer, $nameValueContainer;
+            $inputs.each(function(i, input) {
+                var $input, $inputGroup, $errorContainer, $nameValueContainer;
 
-				$input = $(input);
-				if (!_this.clazz.VALID_INPUT_REGEXP.test($input.val())) {
-					valid = false;
-					$inputGroup = $input.parent();
-					$errorContainer = $(".control-formError", $inputGroup);
-					$nameValueContainer = $inputGroup.parent();
-					$nameValueContainer.addClass("error");
-					$errorContainer.show();
-				}
-			});
+                $input = $(input);
+                if (!_this.clazz.VALID_INPUT_REGEXP.test($input.val())) {
+                    valid = false;
+                    $inputGroup = $input.parent();
+                    $errorContainer = $(".control-formError", $inputGroup);
+                    $nameValueContainer = $inputGroup.parent();
+                    $nameValueContainer.addClass("error");
+                    $errorContainer.show();
+                }
+            });
 
-			return valid;
-		},
+            return valid;
+        },
 
-		clearFormErrors: function() {
-			var $inputs;
+        clearFormErrors: function() {
+            var $inputs;
 
-			$inputs = this.getActiveInputs();
+            $inputs = this.getActiveInputs();
 
-			$inputs.each(function(i, input) {
-				var $input, $inputGroup, $errorContainer, $nameValueContainer;
+            $inputs.each(function(i, input) {
+                var $input, $inputGroup, $errorContainer, $nameValueContainer;
 
-				$input = $(input);
-				$inputGroup = $input.parent();
-				$errorContainer = $(".control-formError", $inputGroup);
-				$nameValueContainer = $inputGroup.parent();
-				$nameValueContainer.removeClass("error");
-				$errorContainer.hide();
-			});
-		},
+                $input = $(input);
+                $inputGroup = $input.parent();
+                $errorContainer = $(".control-formError", $inputGroup);
+                $nameValueContainer = $inputGroup.parent();
+                $nameValueContainer.removeClass("error");
+                $errorContainer.hide();
+            });
+        },
 
-		updateValuesFormField: function($parameterNameValuePairsContainer, $valuesInput) {
-			var $nameValuePairs, values, value;
+        updateValuesFormField: function($parameterNameValuePairsContainer, $valuesInput) {
+            var $nameValuePairs, values, value;
 
-			$nameValuePairs = $(".control-nameValuePairContainer", $parameterNameValuePairsContainer);
+            $nameValuePairs = $(".control-nameValuePairContainer", $parameterNameValuePairsContainer);
 
-			values = [];
+            values = [];
 
-			$nameValuePairs.each(function(i, nameValuePair) {
-				var $nameValuePair, $nameInput, $valueInput;
+            $nameValuePairs.each(function(i, nameValuePair) {
+                var $nameValuePair, $nameInput, $valueInput;
 
-				$nameValuePair = $(nameValuePair);
-				$nameInput = $(".control-nameInput", $nameValuePair);
-				$valueInput = $(".control-valueInput", $nameValuePair);
-				values.push($nameInput.val() + "=" + $valueInput.val());
-			});
-			
-			value = values.join("&");
+                $nameValuePair = $(nameValuePair);
+                $nameInput = $(".control-nameInput", $nameValuePair);
+                $valueInput = $(".control-valueInput", $nameValuePair);
+                values.push($nameInput.val() + "=" + $valueInput.val());
+            });
+            
+            value = values.join("&");
 
-			$valuesInput.val(value);
-		},
+            $valuesInput.val(value);
+        },
 
-		getActiveInputs: function() {
-			//return $(".control-nameInput, .control-valueInput").not(".htmlTemplate .control-nameInput, .htmlTemplate .control-valueInput");
-			return $(".control-nameInput").not(".htmlTemplate .control-nameInput");
-		}
-	}, {
-		className: "page.send.json.ComponentsFormController",
+        getActiveInputs: function() {
+            //return $(".control-nameInput, .control-valueInput").not(".htmlTemplate .control-nameInput, .htmlTemplate .control-valueInput");
+            return $(".control-nameInput").not(".htmlTemplate .control-nameInput");
+        }
+    }, {
+        className: "page.send.json.ComponentsFormController",
 
-		VALID_INPUT_REGEXP: /\S/
-	});
+        VALID_INPUT_REGEXP: /\S/
+    });
 
 }(jQuery));

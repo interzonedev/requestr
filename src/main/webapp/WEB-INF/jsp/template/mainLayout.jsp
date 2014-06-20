@@ -7,51 +7,51 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-		<title>Requestr Application - ${param.title}</title>
+        <title>Requestr Application - ${param.title}</title>
 
-		<meta name="description"
-			content="Make any kind of HTTP request with control over headers and parameters in JSON format or with individual components." />
+        <meta name="description"
+            content="Make any kind of HTTP request with control over headers and parameters in JSON format or with individual components." />
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<link rel="icon" href="<c:url value="/assets/img/favicon.png" />" type="image/png" />
+        <link rel="icon" href="<c:url value="/assets/img/favicon.png" />" type="image/png" />
 
-		<jsp:include page="../frag/commonHeadCss.jsp" />
+        <jsp:include page="../frag/commonHeadCss.jsp" />
 
-		<c:if test="${not empty param.cssIncludes}">
-			<jsp:include page="${param.cssIncludes}" />
-		</c:if>
+        <c:if test="${not empty param.cssIncludes}">
+            <jsp:include page="${param.cssIncludes}" />
+        </c:if>
 
-		<jsp:include page="../frag/commonHeadJsIncludes.jsp" />
+        <jsp:include page="../frag/commonHeadJsIncludes.jsp" />
 
-		<c:if test="${not empty param.headJsIncludes}">
-			<jsp:include page="${param.headJsIncludes}" />
-		</c:if>
-	</head>
+        <c:if test="${not empty param.headJsIncludes}">
+            <jsp:include page="${param.headJsIncludes}" />
+        </c:if>
+    </head>
 
-	<body>
-		<jsp:include page="../frag/top.jsp" />
+    <body>
+        <jsp:include page="../frag/top.jsp" />
 
-		<div class="container">
-			<jsp:include page="${param.bodyContent}" />
+        <div class="container">
+            <jsp:include page="${param.bodyContent}" />
 
-			<jsp:include page="../frag/bottom.jsp" />
-		</div>
+            <jsp:include page="../frag/bottom.jsp" />
+        </div>
 
-		<jsp:include page="../frag/commonBodyJsIncludes.jsp" />
+        <jsp:include page="../frag/commonBodyJsIncludes.jsp" />
 
-		<c:if test="${not empty param.bodyJsIncludes}">
-			<jsp:include page="${param.bodyJsIncludes}" />
-		</c:if>
+        <c:if test="${not empty param.bodyJsIncludes}">
+            <jsp:include page="${param.bodyJsIncludes}" />
+        </c:if>
 
-		<jsp:include page="../frag/commonBodyJsSetUp.jsp" />
+        <jsp:include page="../frag/commonBodyJsSetUp.jsp" />
 
-		<c:if test="${not empty param.bodyJsSetUp}">
-			<jsp:include page="${param.bodyJsSetUp}" />
-		</c:if>
-	</body>
+        <c:if test="${not empty param.bodyJsSetUp}">
+            <jsp:include page="${param.bodyJsSetUp}" />
+        </c:if>
+    </body>
 </html>

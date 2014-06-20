@@ -3,34 +3,33 @@
 Author styles go here.
 
 */
-
 .inline {
-	display: inline;
+    display: inline;
 }
 
 label.wider {
-	width: 50px;
-	text-align: right;
-	float: left;
-	padding-right: 5px;
+    width: 50px;
+    text-align: right;
+    float: left;
+    padding-right: 5px;
 }
 
 .link {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .spacer {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 
 .formError {
-	display: none;
+    display: none;
 }
 
 .htmlTemplate {
-	display: none;
+    display: none;
 }
 
 .nameValuePairContainer {
-	margin-bottom: 5px;
+    margin-bottom: 5px;
 }
