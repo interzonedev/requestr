@@ -14,8 +14,8 @@ import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.interzonedev.httpagent.Method;
-import com.interzonedev.httpagent.Request;
+import com.interzonedev.httpcore.Method;
+import com.interzonedev.httpcore.Request;
 
 public class JsonForm {
 
@@ -92,6 +92,7 @@ public class JsonForm {
             }
         }
 
-        return new Request(url, requestMethod, headers, parameters);
+        return Request.newBuilder().setUrl(url).setMethod(requestMethod).setHeaders(headers).setParameters(parameters)
+                .build();
     }
 }

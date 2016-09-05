@@ -8,8 +8,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.interzonedev.httpagent.Method;
-import com.interzonedev.httpagent.Request;
+import com.interzonedev.httpcore.Method;
+import com.interzonedev.httpcore.Request;
 
 public class ComponentsForm {
 
@@ -68,7 +68,8 @@ public class ComponentsForm {
 
         translateInputToComponents(getParameterValues(), parameters);
 
-        return new Request(getUrl(), requestMethod, headers, parameters);
+        return Request.newBuilder().setUrl(getUrl()).setMethod(requestMethod).setHeaders(headers)
+                .setParameters(parameters).build();
     }
 
     private void translateInputToComponents(String input, Map<String, List<String>> components) {

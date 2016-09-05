@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.interzonedev.httpagent.Method;
-import com.interzonedev.httpagent.Request;
 import com.interzonedev.httpagent.RequestService;
-import com.interzonedev.httpagent.Response;
+import com.interzonedev.httpcore.Method;
+import com.interzonedev.httpcore.Request;
+import com.interzonedev.httpcore.Response;
 import com.interzonedev.requestr.web.RequestrController;
 
 @Controller
