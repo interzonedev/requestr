@@ -1,16 +1,13 @@
 package com.interzonedev.requestr.web.send;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.Future;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.validation.Valid;
-
+import com.interzonedev.httpagent.RequestService;
+import com.interzonedev.httpcore.Method;
+import com.interzonedev.httpcore.Request;
+import com.interzonedev.httpcore.Response;
+import com.interzonedev.requestr.web.RequestrController;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,15 +15,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.interzonedev.httpagent.RequestService;
-import com.interzonedev.httpcore.Method;
-import com.interzonedev.httpcore.Request;
-import com.interzonedev.httpcore.Response;
-import com.interzonedev.requestr.web.RequestrController;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.validation.Valid;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 @Controller
 @RequestMapping(value = "/send")
 public class SendController extends RequestrController {
+
+    private static final Logger log = LoggerFactory.getLogger(SendController.class);
 
     private static final String JSON_FORM_VIEW = "send/json/jsonForm";
     private static final String COMPONENTS_FORM_VIEW = "send/components/componentsForm";
