@@ -1,3 +1,12 @@
 #!/bin/sh
 
-sh target/bin/webapp
+export JAVA_OPTS=\
+'-server '\
+'-Xms200m '\
+'-Xmx200m '\
+'-XX:MetaspaceSize=50m '\
+'-XX:MaxMetaspaceSize=100m '\
+'-Xss1024k '\
+'-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5001'
+
+sh target/bin/webapp $@
