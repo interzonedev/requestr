@@ -20,7 +20,7 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <link rel="icon" href="<c:url value="/assets/img/favicon.png" />" type="image/png" />
+        <link rel="icon" href="<c:url value="/img/favicon.png" />" type="image/png" />
 
         <jsp:include page="../frag/commonHeadCss.jsp" />
 

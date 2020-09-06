@@ -1,7 +1,11 @@
 .idea/
 *.iml
-target/
 .classpath
 .project
 .settings/
 *.jpage
+target/
+build/
+out/
+.gradle/
+tomcat/
