@@ -3,8 +3,8 @@ package com.interzonedev.requestr.web.send;
 import com.interzonedev.httpcore.Method;
 import com.interzonedev.httpcore.Request;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
